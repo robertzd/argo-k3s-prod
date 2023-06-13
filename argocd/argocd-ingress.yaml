@@ -1,0 +1,35 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: argocd-k3s-int-slv52-net
+  namespace: argocd
+spec:
+  secretName: argocd-k3s-int-slv52-net
+  issuerRef:
+    name: acme-issuer
+    kind: ClusterIssuer
+  dnsNames:
+  - 'argocd.k3s.int.slv52.net'
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  rules:
+  - host: "argocd.k3s.int.slv52.net"
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+  tls:
+  - hosts:
+      - argocd.k3s.int.slv52.net
+    secretName: argocd-k3s-int-slv52-net
